@@ -6,6 +6,7 @@
 | **Depende de** | — |
 | **Estado** | ⬜ Pendiente |
 | **Fuente de partida** | Javadoc y TODOs de `src/Estado.java` |
+| **Guía de implementación** | [01-modelo-del-puzzle.md](01-modelo-del-puzzle.md) (modelo) · [02-estado-y-bitboard.md](02-estado-y-bitboard.md) (bitboard, trazas y checklist) |
 
 ## 1. Objetivo
 
@@ -29,6 +30,9 @@ heurísticas (Tarea 3).
 - La tabla `ACCIONES[32]` **ya está inicializada y no se modifica**:
   `ACCIONES[0..15]` tienen signo `+` (índice `f * 4 + c`),
   `ACCIONES[16..31]` tienen signo `-`.
+- **Identificación de celdas**: los dos dígitos `<fila><columna>` (`00`..`33`)
+  nombran tanto a la casilla como a la acción sobre ella (mismo formato que
+  `accionComoTexto`), p. ej. `02+` = fila 0, columna 2, derecha.
 - **Semántica de una acción** (`fila`, `columna`, `signo`) — *movimiento
   encadenado*, dos desplazamientos en orden fijo:
   1. `desplazarFila(bitboard, fila, positivo)`: con `+` la fila se desplaza
@@ -161,7 +165,14 @@ java -jar target/loopover.jar verify -s 00010203040506070809101112131415
 # A5: errores controlados (exit code 1, mensaje en stderr)
 java -jar target/loopover.jar verify -s 000102030405060708091011121314
 java -jar target/loopover.jar verify -s 00010203040506070809101112131415 -a 99+
+
+# A6: propiedad de orden 7 — toda acción es un ciclo de 7 casillas,
+#     así que aplicarla 7 veces seguidas devuelve el mismo estado
+java -jar target/loopover.jar verify -s 00010203040506070809101112131415 -a 00+,00+,00+,00+,00+,00+,00+
+# → 00010203040506070809101112131415   (y análogo con 21-, 33+, …)
 ```
+
+Ver detalle y trazas en [02-estado-y-bitboard.md](02-estado-y-bitboard.md).
 
 ## 7. Decisiones abiertas
 
@@ -171,7 +182,9 @@ java -jar target/loopover.jar verify -s 00010203040506070809101112131415 -a 99+
 2. **Iguales con mismo bitboard y distinta identidad**: `equals` por bitboard
    implica que `Visitados` puede deduplicar por valor. Confirmar en Tarea 2.
 3. **Sin comprobación de paridad/solvabilidad en el constructor**: cualquier
-   permutación se acepta. Si el grupo generado por las 32 acciones no cubre
-   `16!`, habrá estados sin solución (la Tarea 2 los resolverá con fallo por
-   profundidad/límites). Posible mejora futura: chequeo de paridad en
-   `Estado`.
+   permutación se acepta. Demostrado en
+   [01-modelo-del-puzzle.md](01-modelo-del-puzzle.md) §6: cada acción es un
+   **ciclo de 7 casillas** (permutación par) ⇒ **los estados de permutación
+   impar son irresolubles** (~la mitad de los 16!). La Tarea 2 los resolverá
+   con fallo por profundidad/límites. Posible mejora futura: chequeo de
+   paridad en `Estado` o en `solve`.
