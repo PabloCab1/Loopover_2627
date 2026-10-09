@@ -1,0 +1,32 @@
+# Maven / Java
+target/
+*.class
+*.jar
+*.war
+dependency-reduced-pom.xml
+hs_err_pid*
+replay_pid*
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.settings/
+.classpath
+.project
+.factorypath
+nbproject/
+*.swp
+
+# SO
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+
+# Recursos binarios (Pattern Databases de la Tarea 3)
+*.dat
